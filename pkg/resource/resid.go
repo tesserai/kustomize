@@ -71,8 +71,10 @@ func (n ResId) GvknString() string {
 // GvknEquals return if two ResId have the same Group/Version/Kind and name
 // The comparison excludes prefix
 func (n ResId) GvknEquals(id ResId) bool {
-	return n.gvk.Group == id.gvk.Group && n.gvk.Version == id.gvk.Version &&
-		n.gvk.Kind == id.gvk.Kind && n.name == id.name
+	b := n.gvk.Group == id.gvk.Group && n.gvk.Version == id.gvk.Version &&
+		n.gvk.Kind == id.gvk.Kind && n.name == id.name &&
+		n.namespace == id.namespace
+	return b
 }
 
 // Gvk returns Group/Version/Kind of the resource.

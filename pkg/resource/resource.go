@@ -74,7 +74,7 @@ func (r *Resource) IsGenerated() bool {
 
 // Id returns the ResId for the resource.
 func (r *Resource) Id() ResId {
-	return NewResId(r.GroupVersionKind(), r.GetName())
+	return NewResIdWithPrefixNamespace(r.GroupVersionKind(), r.GetName(), "", r.GetNamespace())
 }
 
 // Merge performs merge with other resource.

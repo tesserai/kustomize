@@ -26,6 +26,8 @@ import (
 	"github.com/ghodss/yaml"
 	"github.com/golang/glog"
 
+	corev1 "k8s.io/api/core/v1"
+
 	"github.com/pkg/errors"
 	"sigs.k8s.io/kustomize/pkg/configmapandsecret"
 	"sigs.k8s.io/kustomize/pkg/constants"
@@ -285,7 +287,7 @@ func (a *Application) resolveRefVars(m resmap.ResMap) (map[string]string, error)
 		return result, err
 	}
 	for _, v := range vars {
-		id := resource.NewResId(v.ObjRef.GroupVersionKind(), v.ObjRef.Name)
+		id := resource.NewResIdWithPrefixNamespace(v.ObjRef.GroupVersionKind(), v.ObjRef.Name, "", v.ObjRef.Namespace)
 		if r, found := m.DemandOneMatchForId(id); found {
 			s, err := r.GetFieldValue(v.FieldRef.FieldPath)
 			if err != nil {
@@ -297,6 +299,14 @@ func (a *Application) resolveRefVars(m resmap.ResMap) (map[string]string, error)
 		}
 	}
 	return result, nil
+}
+
+func isNamespaced(objref corev1.ObjectReference) bool {
+	kind := objref.Kind
+	return kind != "Namespace" &&
+		kind != "ClusterRoleBinding" &&
+		kind != "ClusterRole" &&
+		kind != "CustomResourceDefinition"
 }
 
 // getAllVars returns all the "environment" style Var instances defined in the app.
@@ -321,6 +331,9 @@ func (a *Application) getAllVars() ([]types.Var, error) {
 	}
 	for _, v := range a.kustomization.Vars {
 		v.Defaulting()
+		if v.ObjRef.Namespace == "" && isNamespaced(v.ObjRef) {
+			v.ObjRef.Namespace = a.kustomization.Namespace
+		}
 		result = append(result, v)
 	}
 	if len(errs.Get()) > 0 {
