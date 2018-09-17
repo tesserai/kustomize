@@ -19,6 +19,22 @@ func NewRefVarTransformer(vars map[string]string) (Transformer, error) {
 		vars: vars,
 		pathConfigs: []PathConfig{
 			{
+				GroupVersionKind: &schema.GroupVersionKind{Group: "certmanager.k8s.io", Kind: "ClusterIssuer"},
+				Path:             []string{"spec", "acme", "dns01", "providers", "clouddns", "project"},
+			},
+			{
+				GroupVersionKind: &schema.GroupVersionKind{Group: "certmanager.k8s.io", Kind: "Certificate"},
+				Path:             []string{"spec", "commonName"},
+			},
+			{
+				GroupVersionKind: &schema.GroupVersionKind{Group: "certmanager.k8s.io", Kind: "Certificate"},
+				Path:             []string{"spec", "dnsNames"},
+			},
+			{
+				GroupVersionKind: &schema.GroupVersionKind{Group: "certmanager.k8s.io", Kind: "Certificate"},
+				Path:             []string{"spec", "acme", "config", "domains"},
+			},
+			{
 				GroupVersionKind: &schema.GroupVersionKind{Kind: "Service"},
 				Path:             []string{"metadata", "annotations"},
 			},

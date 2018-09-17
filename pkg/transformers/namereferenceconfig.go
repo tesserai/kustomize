@@ -344,6 +344,10 @@ var defaultNameReferencePathConfigs = []ReferencePathConfig{
 		},
 		pathConfigs: []PathConfig{
 			{
+				GroupVersionKind: &schema.GroupVersionKind{Group: "certmanager.k8s.io", Kind: "ClusterIssuer"},
+				Path:             []string{"spec", "acme", "dns01", "providers", "clouddns", "serviceAccountSecretRef", "name"},
+			},
+			{
 				GroupVersionKind: &schema.GroupVersionKind{
 					Version: "v1",
 					Kind:    "Pod",
