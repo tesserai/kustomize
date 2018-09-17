@@ -19,6 +19,10 @@ func NewRefVarTransformer(vars map[string]string) (Transformer, error) {
 		vars: vars,
 		pathConfigs: []PathConfig{
 			{
+				GroupVersionKind: &schema.GroupVersionKind{Kind: "Service"},
+				Path:             []string{"metadata", "annotations"},
+			},
+			{
 				GroupVersionKind: &schema.GroupVersionKind{Kind: "StatefulSet"},
 				Path:             []string{"spec", "template", "spec", "initContainers", "command"},
 			},
@@ -133,6 +137,12 @@ func (rv *refvarTransformer) Transform(resources resmap.ResMap) error {
 						xs = append(xs, expansion.Expand(a.(string), mappingFunc))
 					}
 					return xs, nil
+				case map[string]interface{}:
+					mp := map[string]interface{}{}
+					for k, v := range in.(map[string]interface{}) {
+						mp[k] = expansion.Expand(v.(string), mappingFunc)
+					}
+					return mp, nil
 				case interface{}:
 					s, ok := in.(string)
 					if !ok {
