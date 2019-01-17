@@ -21,8 +21,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"strings"
-
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 )
@@ -115,8 +113,55 @@ func mergeStringMaps(maps ...map[string]string) map[string]string {
 }
 
 // GetFieldValue returns value at the given fieldpath.
+// Similar in spirit to: https://github.com/kubernetes/kubernetes/blob/master/pkg/fieldpath/fieldpath.go
 func (r *Resource) GetFieldValue(fieldPath string) (string, error) {
-	return getFieldValue(r.UnstructuredContent(), strings.Split(fieldPath, "."))
+	split := []string{}
+	prevIx := 0
+	for i := 0; i < len(fieldPath); i++ {
+		switch fieldPath[i] {
+		case '.':
+			split = append(split, fieldPath[prevIx:i])
+			prevIx = i + 1
+		case '[':
+			split = append(split, fieldPath[prevIx:i])
+			prevIx = i + 1
+			i++
+			if i >= len(fieldPath) {
+				return "", fmt.Errorf("fieldPath terminated early. Expected a quote after [: %s", fieldPath)
+			}
+			if fieldPath[i] != '\'' {
+				return "", fmt.Errorf("Expected a ' after [: %s", fieldPath)
+			}
+			prevIx = i + 1
+
+			for {
+				i++
+				if i >= len(fieldPath) {
+					return "", fmt.Errorf("fieldPath terminated early. Missing ': %s", fieldPath)
+
+				}
+				if fieldPath[i] == '\'' {
+					split = append(split, fieldPath[prevIx:i])
+					i++
+					break
+				}
+			}
+
+			if i >= len(fieldPath) {
+				return "", fmt.Errorf("fieldPath terminated early. Expected ]: %s", fieldPath)
+			}
+
+			if fieldPath[i] != ']' {
+				return "", fmt.Errorf("fieldPath terminated early. Missing ']': %s", fieldPath)
+			}
+
+			prevIx = i + 1
+		}
+	}
+	if prevIx < len(fieldPath) {
+		split = append(split, fieldPath[prevIx:len(fieldPath)])
+	}
+	return getFieldValue(r.UnstructuredContent(), split)
 }
 
 func getFieldValue(m map[string]interface{}, pathToField []string) (string, error) {
