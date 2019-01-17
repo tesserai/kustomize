@@ -774,6 +774,14 @@ var defaultNameReferencePathConfigs = []ReferencePathConfig{
 				Path:               []string{"roleRef", "name"},
 				CreateIfNotPresent: false,
 			},
+			{
+				GroupVersionKind: &schema.GroupVersionKind{
+					Group: "rbac.authorization.k8s.io",
+					Kind:  "ClusterRoleBinding",
+				},
+				Path:               []string{"subjects", "name"},
+				CreateIfNotPresent: false,
+			},
 		},
 	},
 	{
