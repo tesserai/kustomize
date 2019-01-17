@@ -929,6 +929,21 @@ var defaultNameReferencePathConfigs = []ReferencePathConfig{
 			},
 		},
 	},
+	{
+		referencedGVK: schema.GroupVersionKind{
+			Version: "v1",
+			Kind:    "StorageClass",
+		},
+		pathConfigs: []PathConfig{
+			{
+				GroupVersionKind: &schema.GroupVersionKind{
+					Kind: "StatefulSet",
+				},
+				Path:               []string{"spec", "volumeClaimTemplates", "spec", "storageClassName"},
+				CreateIfNotPresent: false,
+			},
+		},
+	},
 }
 
 // AddNameReferencePathConfigs adds extra reference path configs to the default one
