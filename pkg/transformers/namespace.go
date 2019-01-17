@@ -55,6 +55,21 @@ var skipNamespacePathConfigs = []PathConfig{
 			Kind: "CustomResourceDefinition",
 		},
 	},
+	{
+		GroupVersionKind: &schema.GroupVersionKind{
+			Kind: "ConfigMapList",
+		},
+	},
+	{
+		GroupVersionKind: &schema.GroupVersionKind{
+			Kind: "RoleBindingList",
+		},
+	},
+	{
+		GroupVersionKind: &schema.GroupVersionKind{
+			Kind: "RoleList",
+		},
+	},
 }
 
 var _ Transformer = &namespaceTransformer{}

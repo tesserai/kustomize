@@ -306,7 +306,10 @@ func isNamespaced(objref corev1.ObjectReference) bool {
 	return kind != "Namespace" &&
 		kind != "ClusterRoleBinding" &&
 		kind != "ClusterRole" &&
-		kind != "CustomResourceDefinition"
+		kind != "CustomResourceDefinition" &&
+		kind != "ConfigMapList" &&
+		kind != "RoleList" &&
+		kind != "RoleBindingList"
 }
 
 // getAllVars returns all the "environment" style Var instances defined in the app.
